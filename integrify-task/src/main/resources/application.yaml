@@ -1,0 +1,33 @@
+server:
+  port: 9000
+
+
+#################### Logs #######################
+
+spring:
+  application:
+    name: todo-server
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:todo-postgres-db}
+    username: ${POSTGRES_USER:todo-postgres}
+    password: ${POSTGRES_PASSWORD:todo-postgres}
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+
+### Postgres Docker image
+#docker run --name myPostgresDb -p 5432:5432 -e POSTGRES_USER=todo-postgres -e POSTGRES_PASSWORD=todo-postgres -e POSTGRES_DB=todo-postgres-db -d postgres

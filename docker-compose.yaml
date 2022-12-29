@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  # Backend Service
+  todoApp:
+    image: wisekingdavid/todo-task:0.1
+    container_name: todo-server
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgreSQL:5432/todo-postgres-db
+      - SPRING_DATASOURCE_USERNAME=todo-postgres
+      - SPRING_DATASOURCE_PASSWORD=todo-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+    depends_on:
+      - PostgreSQL
+    networks:
+      - backend
+
+  # Database
+  PostgreSQL:
+    image: postgres
+    container_name: todo-postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=todo-postgres
+      - POSTGRES_PASSWORD=todo-postgres
+      - POSTGRES_DB=todo-postgres-db
+    networks:
+      - backend
+
+networks:
+  backend:
