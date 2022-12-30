@@ -14,10 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-//@RequiredArgsConstructor
-//@EnableWebSecurity
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -53,94 +50,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf().disable()
-                .authorizeRequests()
+        http.authorizeRequests()
                 // URL matching for accessibility
-                .antMatchers("/**/auth/**").permitAll()
+                .antMatchers( "/api/v1/signin", "/api/v1/signup").permitAll()
 //                .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
-//                .antMatchers("/account/**").hasAnyAuthority("USER")
+                .antMatchers("/api/v1/todos", "/api/v1/todos/**").hasAnyAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
-                // form login
                 .csrf().disable().formLogin()
-                .loginPage("/login")
-                .failureUrl("/login?error=true")
+                .loginPage("/api/v1/signin")
                 .successHandler(sucessHandler)
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .and()
-                // logout
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/");
+                .httpBasic();
+//                // logout
+//                .logout()
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//                .logoutSuccessUrl("/")
 //                .and()
 //                .exceptionHandling()
 //                .accessDeniedPage("/access-denied");
 
-        http.authenticationProvider(authenticationProvider());
-        http.headers().frameOptions().sameOrigin();
+                http.authenticationProvider(authenticationProvider());
+                http.headers().frameOptions().sameOrigin();
 
-        return http.build();
+                return http.build();
     }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**");
     }
-
-//    private final JwtAuthFilter jwtAuthFilter;
-//    private final UserDao userDao;
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-//        http
-//                .csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/**/auth/**")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-//
-//    private AuthenticationProvider authenticationProvider() {
-//        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setUserDetailsService(userDetailsService());
-//        authenticationProvider.setPasswordEncoder(passowrdEncoder());
-//        return authenticationProvider;
-//    }
-//
-////    @Bean
-////    public PasswordEncoder passowrdEncoder() {
-////        return new BCryptPasswordEncoder();
-////    }
-//
-//    @Bean
-//    public PasswordEncoder passowrdEncoder() {
-//        return NoOpPasswordEncoder.getInstance();
-//    }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-//        return authenticationConfiguration.getAuthenticationManager();
-//    }
-//
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        return new UserDetailsService() {
-//            @Override
-//            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//                return userDao.findUserByEmail(email);
-//            }
-//        };
-//    }
 
 }

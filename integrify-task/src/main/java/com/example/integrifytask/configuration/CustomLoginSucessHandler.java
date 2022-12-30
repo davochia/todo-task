@@ -26,16 +26,15 @@ public class CustomLoginSucessHandler extends SimpleUrlAuthenticationSuccessHand
     }
 
     protected String determineTargetUrl(Authentication authentication){
-        String url = "/signin?error=true";
+        String url = "/api/v1/signin?error=true";
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<String> roles = new ArrayList<String>();
         for(GrantedAuthority a : authorities){
             roles.add(a.getAuthority());
         }
-        if(roles.contains("ADMIN")){
-            url = "/todos";
-        }else if(roles.contains("USER")) {
-            url = "/todos";
+
+        if(roles.contains("USER")) {
+            url = "/api/v1/todos";
         }
         return url;
     }

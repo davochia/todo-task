@@ -1,8 +1,19 @@
 server:
   port: 9000
+  error:
+    include-message: always
 
 
 #################### Logs #######################
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: TRACE
+      springframework:
+        web: DEBUG
+
 
 spring:
   application:
@@ -24,9 +35,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        jdbc:
-          lob:
-            non_contextual_creation: true
 
 
 ### Postgres Docker image

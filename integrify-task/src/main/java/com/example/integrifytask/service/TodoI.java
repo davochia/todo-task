@@ -7,10 +7,11 @@ import com.example.integrifytask.model.User;
 import java.util.List;
 
 public interface TodoI {
-    void signUp(User user);
+    User signUp(User user);
+    User changePassword(User user, String newPassword);
+
     List<Object> isUserPresent(User user);
     void signIn(String email, String password);
-    void changePassword(String oldPassword, String newPassword);
 
     Todo addTodo(Integer userId, Todo newTodo);
     List<Todo> getTodos(TodoStatus status);

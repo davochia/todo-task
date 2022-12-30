@@ -20,15 +20,17 @@ import java.util.Collections;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "USER")
+@Entity
+@Table(name = "users")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @NotNull(message = "Email cannot be empty")
     @Email(message = "Please enter a valid email address")
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @NotNull(message = "Password cannot be empty")
@@ -46,6 +48,12 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "locked")
+    private Boolean locked = false;
+
+    @Column(name = "enabled")
+    private Boolean enabled = true;
+
     /**
      * @return
      */
@@ -60,7 +68,7 @@ public class User implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     /**
@@ -68,7 +76,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     /**
@@ -76,7 +84,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return !locked;
     }
 
     /**
@@ -84,7 +92,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     /**
@@ -92,6 +100,6 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 }

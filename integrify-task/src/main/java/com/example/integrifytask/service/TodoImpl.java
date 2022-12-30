@@ -34,27 +34,18 @@ public class TodoImpl implements TodoI, UserDetailsService {
      * @param user
      */
     @Override
-    public void signUp(User user) {
+    public User signUp(User user) {
+        Optional<User> userExist = userRepository.findByEmail(user.getEmail());
+
+        if (userExist.isPresent()){
+            throw new RuntimeException("User already exit");
+        }
+
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
-    /**
-     * @param user
-     * @return
-     */
-    @Override
-    public List<Object> isUserPresent(User user) {
-        boolean userExists = false;
-        String message = null;
-        Optional<User> existingUserEmail = userRepository.findByEmail(user.getEmail());
-        if(existingUserEmail.isPresent()){
-            userExists = true;
-            message = "Email Already Present!";
-        }
-        return Arrays.asList(userExists, message);
-    }
 
     /**
      * @param email
@@ -65,13 +56,17 @@ public class TodoImpl implements TodoI, UserDetailsService {
 
     }
 
-    /**
-     * @param oldPassword
-     * @param newPassword
-     */
-    @Override
-    public void changePassword(String oldPassword, String newPassword) {
 
+    @Override
+    public User changePassword(User oldUser, String newPasswordd) {
+        Optional<User> userExist = userRepository.findByEmail(oldUser.getEmail());
+        if (!userExist.isPresent()){
+            throw new RuntimeException("User does not exit");
+        }
+        User user = userExist.get();
+        String encodedPassword = bCryptPasswordEncoder.encode(newPasswordd);
+        user.setPassword(encodedPassword);
+        return userRepository.save(user);
     }
 
     @Override
@@ -82,6 +77,16 @@ public class TodoImpl implements TodoI, UserDetailsService {
                 ));
     }
 
+    @Override
+    public List<Object> isUserPresent(User user) {
+        boolean userExists = false;
+        Optional<User> existingUserEmail = userRepository.findByEmail(user.getEmail());
+        if(existingUserEmail.isPresent()){
+            userExists = true;
+        }
+
+        return Arrays.asList(userExists);
+    }
 
 //    Todos
     /**

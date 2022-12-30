@@ -9,11 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -25,43 +22,17 @@ public class TodoController {
     @Autowired
     private TodoImpl todoService;
 
-    @RequestMapping(value = {"/auth/signin"}, method = RequestMethod.GET)
-    public String login(){
-        return "/auth/signin";
+    @PostMapping("/signup")
+    public ResponseEntity<User> registerNewUser(@RequestBody User user){
+        return new ResponseEntity<>(todoService.signUp(user), HttpStatus.CREATED);
+
     }
 
-    @RequestMapping(value = {"/auth/signup"}, method = RequestMethod.GET)
-    public String createUser(Model model){
-        model.addAttribute("user", new User());
-        return "/auth/signup";
+    @PutMapping("/changePassword")
+    @Operation(summary = "change password from the system")
+    public ResponseEntity<User> changePassword(@RequestBody User user, @RequestParam String newPassword) {
+        return new ResponseEntity<>(todoService.changePassword(user, newPassword), HttpStatus.CREATED);
     }
-
-    @RequestMapping(value = {"/auth/signup"}, method = RequestMethod.POST)
-    public String registerNewUser(Model model, @Valid User user, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            model.addAttribute("successMessage", "User registered successfully!");
-            model.addAttribute("bindingResult", bindingResult);
-            return "/auth/signup";
-        }
-        List<Object> userPresentObj = todoService.isUserPresent(user);
-        if((Boolean) userPresentObj.get(0)){
-            model.addAttribute("successMessage", userPresentObj.get(1));
-            return "/auth/signup";
-        }
-
-        todoService.signUp(user);
-        model.addAttribute("successMessage", "User registered successfully!");
-
-        return "/auth/signin";
-    }
-
-
-//
-//    @PutMapping("/changePassword")
-//    @Operation(summary = "change password from the system")
-//    public ResponseEntity<User> changePassword(@PathVariable Integer id, @RequestBody TodoController newTodoController) {
-//        return new ResponseEntity<>(todoService.modifyPassword(id, newTodoController), HttpStatus.CREATED);
-//    }
 
     // Todos ////
     @PostMapping("/todos")
